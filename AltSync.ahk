@@ -1,7 +1,7 @@
 /************************************************************************
  * @description A socket library to allow simple communication with alt accounts on the same computer (RDP).
  * @author @Myurius
- * @date 2025/07/07
+ * @date 2025/07/09
  * @version 0.1.1
  **********************************************************************
  */
