@@ -1,8 +1,8 @@
 /************************************************************************
- * @description A socket library to allow simple communication with alt accounts.
+ * @description A socket library to allow simple communication with alt accounts on the same computer (RDP).
  * @author @Myurius
  * @date 2025/07/07
- * @version 0.0.1
+ * @version 0.1.1
  **********************************************************************
  */
 
@@ -67,9 +67,9 @@ class Sync {
     class Main extends Sync {
         /**
          * Creates a new main account host to control the alts.
-         * @param {Object} eventObj An object containing an Accept and Close method for handling events.
+         * @param {Object} eventObj Use the Sync.Main.eventObj class or make an object containing an Accept and Close method for handling events.
          * @param {Integer} Alts The number of alts that are allowed to connect. 
-         * @param {Integer} AutoSetup Automatically set up the sockets. 
+         * @param {Integer} AutoSetup Automatically set up the sockets. Don't disable this unless you know how the sockets work.
          * @param {Integer} Port The port which the sockets connect to.
          */
         __New(eventObj, Alts := 3, AutoSetup := 1, Port := 8888) {
@@ -119,14 +119,26 @@ class Sync {
                     throw OSError(err)
             return sock
         }
+
+        class eventObj {
+            /**
+             * Creates a new event object for the eventObj parameter. 
+             * @param Accept The function to call when accepting a connecting socket. Passes a self parameter.
+             * @param Close The function to call when the sockets close. Passes a self parameter.
+             */
+            __New(Accept, Close) {
+                this.Accept := {Call: (obj, self) => Accept(self)} 
+                this.Close := {Call: (obj, self) => Close(self)}
+            }
+        }
     }
 
     class Alt extends Sync {
         /**
          * Creates a new alt account client to communicate with a main account host. 
-         * @param {Object} eventObj An object containing a Receive and Close method for handling events.
+         * @param {Object} eventObj Use the Sync.Alt.eventObj class or make an object containing a Receive and Close method for handling events.
          * @param {Number} Sock A handle to a socket. When accpeting a new connection put the returned handle here. 
-         * @param {Integer} AutoSetup Automatically set up the sockets. 
+         * @param {Integer} AutoSetup Automatically set up the sockets. Don't disable this unless you know how the sockets work.
          * @param {Integer} Port The port which the sockets connect to.
          */
         __New(eventObj, Sock := -1, AutoSetup := 1, Port := 8888) {
@@ -207,6 +219,18 @@ class Sync {
             if DllCall("ws2_32\send", "ptr", this._sock, "ptr", buf.Ptr, "int", buf.Size, "int", 0) = -1
                 if (err := DllCall("ws2_32\WSAGetLastError")) != 10035 ;WSAEWOULDBLOCK
                     throw OSError(err)
+        }
+
+        class eventObj {
+            /**
+             * Creates a new event object for the eventObj parameter. 
+             * @param Receive The function to call when a message is received. Passes a self parameter.
+             * @param Close The function to call when the sockets close. Passes a self parameter.
+             */
+            __New(Receive, Close) {
+                this.Receive := {Call: (obj, self) => Receive(self)}
+                this.Close := {Call: (obj, self) => Close(self)}
+            }
         }
     }
 }
