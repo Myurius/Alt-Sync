@@ -1,8 +1,8 @@
 /************************************************************************
  * @description A socket library to allow simple communication with alt accounts on the same computer (RDP).
  * @author @Myurius
- * @date 2025/07/09
- * @version 0.1.1
+ * @date 2025/08/01
+ * @version 0.1.2
  **********************************************************************
  */
 
@@ -79,11 +79,11 @@ class Sync {
             this._eventobj := eventObj
             this._backlog := Alts
             this._sock := -1
-            this._host := "0.0.0.0", this._port := Port
+            host := "0.0.0.0"
             OnExit((*) => (DllCall("ws2_32\WSACleanup")), -1) 
 
             if AutoSetup {
-                this.Bind(this._host, this._port)
+                this.Bind(host, Port)
                 this.Listen()
             }
         }   
@@ -147,11 +147,11 @@ class Sync {
 
             this._eventobj := eventObj
             this._sock := Sock
-            this._host := "127.0.0.1", this._port := Port
+            host := "127.0.0.1"
 
             if AutoSetup {
                 if this._sock = -1 {
-                    this.Connect(this._host, this._port)
+                    this.Connect(host, Port)
                     return
                 }
                 this.AsyncSelect((Sync.FD_CLOSE | Sync.FD_READ))
