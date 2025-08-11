@@ -1,8 +1,8 @@
 /************************************************************************
  * @description A socket library to allow simple communication with alt accounts on the same computer (RDP).
  * @author @Myurius
- * @date 2025/08/01
- * @version 0.1.2
+ * @date 2025/08/11
+ * @version 0.1.3
  **********************************************************************
  */
 
@@ -72,18 +72,17 @@ class Sync {
          * @param {Integer} AutoSetup Automatically set up the sockets. Don't disable this unless you know how the sockets work.
          * @param {Integer} Port The port which the sockets connect to.
          */
-        __New(eventObj, Alts := 3, AutoSetup := 1, Port := 8888) {
+        __New(eventObj, Alts := 3, AutoSetup := 1, Host := "0.0.0.0", Port := 8888) {
             if !Sync._init
                 this.init()
 
             this._eventobj := eventObj
             this._backlog := Alts
             this._sock := -1
-            host := "0.0.0.0"
             OnExit((*) => (DllCall("ws2_32\WSACleanup")), -1) 
 
             if AutoSetup {
-                this.Bind(host, Port)
+                this.Bind(Host, Port)
                 this.Listen()
             }
         }   
@@ -141,17 +140,16 @@ class Sync {
          * @param {Integer} AutoSetup Automatically set up the sockets. Don't disable this unless you know how the sockets work.
          * @param {Integer} Port The port which the sockets connect to.
          */
-        __New(eventObj, Sock := -1, AutoSetup := 1, Port := 8888) {
+        __New(eventObj, Sock := -1, AutoSetup := 1, Host := "127.0.0.1", Port := 8888) {
              if !Sync._init
                 this.init()
 
             this._eventobj := eventObj
             this._sock := Sock
-            host := "127.0.0.1"
 
             if AutoSetup {
                 if this._sock = -1 {
-                    this.Connect(host, Port)
+                    this.Connect(Host, Port)
                     return
                 }
                 this.AsyncSelect((Sync.FD_CLOSE | Sync.FD_READ))
